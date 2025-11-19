@@ -5,12 +5,13 @@ class FirewallSimulator:
         self.rules = []
         self.logs = []
 
-    def add_rule(self, name, action, port, protocol="tcp"):
+    def add_rule(self, name, action, port, protocol="tcp", color="green"):
         rule = {
             "name": name,
             "action": action,
             "port": port,
             "protocol": protocol,
+            "color": color,
             "timestamp": datetime.now().isoformat()
         }
         self.rules.append(rule)

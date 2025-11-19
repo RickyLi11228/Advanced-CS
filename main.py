@@ -79,7 +79,9 @@ rules_list = ttk.Treeview(frame_rule_list, columns=("Name", "Action", "Port", "P
 for col in ("Name", "Action", "Port", "Protocol"):
     rules_list.heading(col, text=col)
 rules_list.pack(fill="both", expand=True)
-
+# ---- AUTO COLOR TAGS ----
+rules_list.tag_configure("green", background="#CCFFCC")  # allow
+rules_list.tag_configure("red", background="#FFCCCC")    # deny
 # ===== PACKET SIMULATION =====
 frame_sim = tk.LabelFrame(root, text="Simulate Packet")
 frame_sim.pack(fill="x", padx=10, pady=5)
