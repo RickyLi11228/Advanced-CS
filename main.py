@@ -26,10 +26,22 @@ def delete_rule():
     else:
         messagebox.showerror("Error", "Rule not found")
 
+def reset_firewall():
+    fw.rules.clear()
+    fw.logs.clear()
+    refresh_rules()
+    refresh_logs()
+    messagebox.showinfo("Reset", "All rules and logs have been cleared.")
+
 def refresh_rules():
     rules_list.delete(*rules_list.get_children())
     for r in fw.list_rules():
-        rules_list.insert("", "end", values=(r["name"], r["action"], r["port"], r["protocol"]))
+        color_tag = "green" if r["action"] == "allow" else "red"
+        rules_list.insert(
+            "", "end",
+            values=(r["name"], r["action"], r["port"], r["protocol"]),
+            tags=(color_tag,)
+        )
 
 def simulate():
     port = sim_port.get()
@@ -41,11 +53,16 @@ def simulate():
 def refresh_logs():
     logs_list.delete(*logs_list.get_children())
     for log in fw.get_logs():
-        logs_list.insert("", "end", values=(log["time"], log["port"], log["protocol"], log["decision"]))
+        color_tag = "green" if log["decision"] == "allow" else "red"
+        logs_list.insert(
+            "", "end",
+            values=(log["time"], log["port"], log["protocol"], log["decision"]),
+            tags=(color_tag,)
+        )
 
 root = tk.Tk()
 root.title("Ricky's Firewall Simulation")
-root.geometry("850x550")
+root.geometry("850x600")
 
 # ===== RULE CREATION FRAME =====
 frame_rules = tk.LabelFrame(root, text="Add / Remove Rules")
@@ -70,6 +87,7 @@ ttk.Combobox(frame_rules, textvariable=rule_protocol, values=["tcp", "udp"], wid
 
 tk.Button(frame_rules, text="Add Rule", command=add_rule).grid(row=4, column=0, pady=5)
 tk.Button(frame_rules, text="Delete Rule", command=delete_rule).grid(row=4, column=1)
+tk.Button(frame_rules, text="Reset Firewall", command=reset_firewall, bg="#FF7777").grid(row=4, column=2, padx=10)
 
 # ===== RULE LIST TABLE =====
 frame_rule_list = tk.LabelFrame(root, text="Current Rules")
@@ -79,9 +97,10 @@ rules_list = ttk.Treeview(frame_rule_list, columns=("Name", "Action", "Port", "P
 for col in ("Name", "Action", "Port", "Protocol"):
     rules_list.heading(col, text=col)
 rules_list.pack(fill="both", expand=True)
-# ---- AUTO COLOR TAGS ----
-rules_list.tag_configure("green", background="#CCFFCC")  # allow
-rules_list.tag_configure("red", background="#FFCCCC")    # deny
+
+rules_list.tag_configure("green", background="#CCFFCC")
+rules_list.tag_configure("red", background="#FFCCCC")
+
 # ===== PACKET SIMULATION =====
 frame_sim = tk.LabelFrame(root, text="Simulate Packet")
 frame_sim.pack(fill="x", padx=10, pady=5)
@@ -104,5 +123,8 @@ logs_list = ttk.Treeview(frame_logs, columns=("Time", "Port", "Protocol", "Decis
 for col in ("Time", "Port", "Protocol", "Decision"):
     logs_list.heading(col, text=col)
 logs_list.pack(fill="both", expand=True)
+
+logs_list.tag_configure("green", background="#CCFFCC")
+logs_list.tag_configure("red", background="#FFCCCC")
 
 root.mainloop()

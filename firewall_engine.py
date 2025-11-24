@@ -5,13 +5,12 @@ class FirewallSimulator:
         self.rules = []
         self.logs = []
 
-    def add_rule(self, name, action, port, protocol="tcp", color="green"):
+    def add_rule(self, name, action, port, protocol="tcp"):
         rule = {
             "name": name,
             "action": action,
             "port": port,
             "protocol": protocol,
-            "color": color,
             "timestamp": datetime.now().isoformat()
         }
         self.rules.append(rule)
@@ -27,15 +26,12 @@ class FirewallSimulator:
         return self.rules
 
     def simulate_packet(self, port, protocol="tcp"):
-        # First match wins
-        for rule in self.rules:
-            if (rule["port"] == port or rule["port"] == "any") and \
-                rule["protocol"] == protocol:
+        decision = "deny"  # default deny
 
+        for rule in self.rules:
+            if (rule["port"] == port or rule["port"] == "any") and rule["protocol"] == protocol:
                 decision = rule["action"]
                 break
-        else:
-            decision = "deny"  # Default deny
 
         entry = {
             "time": datetime.now().strftime("%H:%M:%S"),
