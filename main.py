@@ -44,7 +44,7 @@ def refresh_logs():
         logs_list.insert("", "end", values=(log["time"], log["port"], log["protocol"], log["decision"]))
 
 root = tk.Tk()
-root.title("Firewall Simulation Trainer")
+root.title("Ricky's Firewall Simulation")
 root.geometry("850x550")
 
 # ===== RULE CREATION FRAME =====
